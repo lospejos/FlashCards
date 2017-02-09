@@ -6,3 +6,7 @@ C++ Windows 10 App for digital flash cards
 - screenshot insertion
 - file insertion (images, pdf, audio)
 - when ansering a question, (handwritten) annotations can be made
+- synchronisation of cards between devices e.g. via OneDrive or Google Drive
+
+####Design
+- active and inactive card sets
