@@ -29,27 +29,39 @@ void ::FlashCards::MainPage::Connect(int __connectionId, ::Platform::Object^ __t
     {
         case 1:
             {
-                this->contentPanel = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
+                this->wideState = safe_cast<::Windows::UI::Xaml::VisualState^>(__target);
             }
             break;
         case 2:
             {
-                this->inputPanel = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
+                this->narrowState = safe_cast<::Windows::UI::Xaml::VisualState^>(__target);
             }
             break;
         case 3:
             {
-                this->greetingOutput = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+                this->contentPanel = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
             }
             break;
         case 4:
             {
-                this->nameInput = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->inputPanel = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
             }
             break;
         case 5:
             {
+                this->greetingOutput = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 6:
+            {
+                this->nameInput = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 7:
+            {
                 this->inputButton = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->inputButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::FlashCards::MainPage::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::Button_Click);
             }
             break;
     }

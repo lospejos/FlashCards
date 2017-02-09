@@ -10,12 +10,12 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-                <VisualState x:Name="wideState">
+                <VisualState x:ConnectionId='1' x:Name="wideState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="641" />
                     </VisualState.StateTriggers>
                 </VisualState>
-                <VisualState x:Name="narrowState">
+                <VisualState x:ConnectionId='2' x:Name="narrowState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
@@ -27,14 +27,15 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <StackPanel x:Name="contentPanel" Margin="20,30,0,0">
+        <StackPanel x:ConnectionId='3' x:Name="contentPanel" Margin="20,30,0,0">
             <TextBlock HorizontalAlignment="Left" Text="Hello World" FontSize="36"/>
             <TextBlock Text="What's your name?" FontSize="24" Style="{StaticResource BaseTextBlockStyle}"/>
-            <StackPanel x:Name="inputPanel" Orientation="Vertical" Margin="0,20,0,20" Height="174">
-                <TextBox x:Name="nameInput" Width="391" HorizontalAlignment="Left" Margin="0, 0, 0, 0" Height="122" AcceptsReturn="True"/>
-                <Button x:Name="inputButton" Content="Say &quot;Hello&quot;" Click="Button_Click" Margin="0,14,0,0"/>
+            <StackPanel x:ConnectionId='4' x:Name="inputPanel" Orientation="Vertical" Margin="0,20,0,20" Height="174">
+                <TextBox x:ConnectionId='6' x:Name="nameInput" Width="391" HorizontalAlignment="Left" Margin="0, 0, 0, 0" Height="122" AcceptsReturn="True"/>
+                <Button x:ConnectionId='7' x:Name="inputButton" Content="Say &quot;Hello&quot;"                      Margin="0,14,0,0"/>
             </StackPanel>
-            <TextBlock x:Name="greetingOutput" Style="{StaticResource BaseTextBlockStyle}" FontSize="24"/>
+            <TextBlock x:ConnectionId='5' x:Name="greetingOutput" Style="{StaticResource BaseTextBlockStyle}" FontSize="24"/>
         </StackPanel>
     </Grid>
 </Page>
+
