@@ -54,10 +54,17 @@ void ::FlashCards::MainPage::Connect(int __connectionId, ::Platform::Object^ __t
             break;
         case 6:
             {
-                this->nameInput = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->goToTestPageButton = safe_cast<::Windows::UI::Xaml::Controls::HyperlinkButton^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::HyperlinkButton^>(this->goToTestPageButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::FlashCards::MainPage::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::goToTestPageButton_Click);
             }
             break;
         case 7:
+            {
+                this->nameInput = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 8:
             {
                 this->inputButton = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
                 (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->inputButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::FlashCards::MainPage::*)

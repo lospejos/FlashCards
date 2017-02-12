@@ -31,3 +31,9 @@ void FlashCards::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::X
 {
 	greetingOutput->Text = "Hello, " + nameInput->Text + "!";
 }
+
+
+void FlashCards::MainPage::goToTestPageButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	this->Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(TestPage::typeid));
+}

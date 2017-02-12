@@ -9,3 +9,5 @@
 #include <ppltasks.h>
 
 #include "App.xaml.h"
+#include "MainPage.xaml.h"
+#include "TestPage.xaml.h"
