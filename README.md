@@ -2,11 +2,12 @@
 C++ Windows Desktop application for digital flash cards
 
 ####Features include:
-- handwritten annotations
+- (handwritten) annotations
 - screenshot insertion
 - file insertion (images, pdf, audio)
-- when ansering a question, (handwritten) annotations can be made
+- when answering a question, (handwritten) annotations can be made
 - synchronisation of cards between devices e.g. via OneDrive or Google Drive
 
 ####Design
 - active and inactive card sets
+- folder structure (card sets can contain other card sets and/or cards)
