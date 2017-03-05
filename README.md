@@ -1,5 +1,5 @@
 # FlashCards
-C++ Windows 10 App for digital flash cards
+C++ Windows Desktop application for digital flash cards
 
 ####Features include:
 - handwritten annotations
