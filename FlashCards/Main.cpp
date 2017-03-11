@@ -7,7 +7,13 @@
 
 #include <windows.h>
 
+// Holds information about the current state of the window
+struct StateInfo {
+	// members
+};
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+inline StateInfo* GetApplicationState(HWND hwnd);
 
 // hInstance: handle for the .exe, hPrevInstance: no meaning, pCmdLine: unicode command line arguments, nCmdShow: flag for minimalizes, maximalized or normal
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -23,6 +29,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	RegisterClass(&wc);		//registers the window class with the operating system
 
+	StateInfo* pStateInfo = new StateInfo;	/// Create a StateInfo object that contains the current state information
+	if (pStateInfo == NULL)
+		return 0;
+
 	// Unique window handle identifier
 	HWND hwnd = CreateWindowEx(
 		0,                              // Optional window styles like transparency
@@ -36,7 +46,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		NULL,							// Parent/owner window
 		NULL,							// Menu
 		hInstance,						// Instance handle
-		NULL							// Additional application data of type void*
+		pStateInfo						// Additional application data of type void* that can be extracted in WM_NCCREATE or WM_CREATE through the lParam (CREATESTRUCT structure)
 	);
 
 	/// Exit when the window creation failed
@@ -61,6 +71,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 // Window Procedure: Defines the behavior of the window: appearance, user events and operating system events, ...
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	StateInfo* pStateInfo;
+	if (uMsg == WM_CREATE)
+	{
+		/// Get the pointer to the StateInfo structure form the void* added in CreateWindowEx(...)
+		CREATESTRUCT *pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+		pStateInfo = reinterpret_cast<StateInfo*>(pCreate->lpCreateParams);
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pStateInfo);	/// Store the StateInfo pointer in the instance data for the window
+	}
+	else
+	{
+		pStateInfo = GetApplicationState(hwnd);
+	}
+
 	switch (uMsg)
 	{
 		case WM_CLOSE:
@@ -89,4 +112,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);	/// Handles all unhandled messages with a default action
+}
+
+// Get the stored StateInfo pointer back from the window
+inline StateInfo* GetApplicationState(HWND hwnd)
+{
+	LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);	/// Get the stored StateInfo pointer back from the window
+	StateInfo* pStateInfo = reinterpret_cast<StateInfo*>(ptr);
+	return pStateInfo;
 }
