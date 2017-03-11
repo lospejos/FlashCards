@@ -55,6 +55,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 	}
 
+	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);	/// Initialize the COM (Component Object Model) library, single-threaded
+	if (FAILED(hr))
+		return 0;
+
 	ShowWindow(hwnd, nCmdShow);		// Show the window
 
 	/// Run the message loop until the user exits the application
@@ -65,6 +69,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		DispatchMessage(&msg);	/// Invokes the WindowProc function once for each message
 	}
 
+	CoUninitialize();	/// Uninitialize the COM Library
 	return 0;
 }
 
