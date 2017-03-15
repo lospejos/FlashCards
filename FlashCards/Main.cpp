@@ -5,15 +5,48 @@
 // Description for a function or a variable (will be shown when hovering over function/variable)
 /// General code description (won't be shown when hovering)
 
+#pragma comment (lib, "d2d1")
 #include <windows.h>
+#include <d2d1.h>
+
+/// Function declarations
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void CalculateLayout();
+HRESULT CreateGraphicsResources();
+void DiscardGraphicsResources();
+void OnPaint();
+void Resize();
+
 
 // Holds information about the current state of the window
 struct StateInfo {
 	// members
 };
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-inline StateInfo* GetApplicationState(HWND hwnd);
+// Get the stored StateInfo pointer back from the window
+inline StateInfo* GetApplicationState(HWND hwnd)
+{
+	LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);	/// Get the stored StateInfo pointer back from the window
+	StateInfo* pStateInfo = reinterpret_cast<StateInfo*>(ptr);
+	return pStateInfo;
+}
+
+// SafeRelease for pointers
+template <class T> void SafeRelease(T **ppT)
+{
+	if (*ppT)
+	{
+		(*ppT)->Release();
+		*ppT = NULL;
+	}
+}
+
+/// Global variables
+HWND hwnd;
+ID2D1Factory *pFactory = NULL;
+ID2D1HwndRenderTarget *pRenderTarget = NULL;
+ID2D1SolidColorBrush *pBrush = NULL;
+D2D1_ELLIPSE ellipse;
 
 // hInstance: handle for the .exe, hPrevInstance: no meaning, pCmdLine: unicode command line arguments, nCmdShow: flag for minimalizes, maximalized or normal
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -34,7 +67,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 
 	// Unique window handle identifier
-	HWND hwnd = CreateWindowEx(
+	hwnd = CreateWindowEx(
 		0,                              // Optional window styles like transparency
 		CLASS_NAME,                     // Window class name, defines the type of window to create
 		L"Learn to Program Windows",    // Window text, usually displayed in title bar
@@ -83,6 +116,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CREATESTRUCT *pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		pStateInfo = reinterpret_cast<StateInfo*>(pCreate->lpCreateParams);
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pStateInfo);	/// Store the StateInfo pointer in the instance data for the window
+
+		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pFactory)))
+			return -1;
+		return 0;
 	}
 	else
 	{
@@ -100,6 +137,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_DESTROY:
 		{
+			DiscardGraphicsResources();
+			SafeRelease(&pFactory);
 			PostQuitMessage(0);		/// Post a WM_QUIT message on the message queue, GetMessage returns 0 and the program ends
 			return 0;
 		}
@@ -107,11 +146,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		/// Repaint the client area of the window
 		case WM_PAINT:
 		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);	/// Fill the structure with information about the repaint request, update region
-			/// Paint either only the update region rcPaint or the whole client area
-			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));		/// Paint the update region with a single color
-			EndPaint(hwnd, &ps);	/// Clear the update region
+			OnPaint();
+			return 0;
+		}
+
+		case WM_SIZE:
+		{
+			Resize();
+			return 0;
 		}
 
 		return 0;
@@ -119,10 +161,82 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);	/// Handles all unhandled messages with a default action
 }
 
-// Get the stored StateInfo pointer back from the window
-inline StateInfo* GetApplicationState(HWND hwnd)
+void CalculateLayout ()
 {
-	LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);	/// Get the stored StateInfo pointer back from the window
-	StateInfo* pStateInfo = reinterpret_cast<StateInfo*>(ptr);
-	return pStateInfo;
+	if (pRenderTarget != NULL)
+	{
+		D2D1_SIZE_F size = pRenderTarget->GetSize();
+		const float x = size.width / 2;
+		const float y = size.height / 2;
+		const float radius = min(x, y);
+		ellipse = D2D1::Ellipse(D2D1::Point2F(x, y), radius, radius);
+	}
+}
+
+HRESULT CreateGraphicsResources()
+{
+	HRESULT hr = S_OK;
+	if (pRenderTarget == NULL)
+	{
+		RECT rc;
+		GetClientRect(hwnd, &rc);
+		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
+
+		hr = pFactory->CreateHwndRenderTarget(
+			D2D1::RenderTargetProperties(),
+			D2D1::HwndRenderTargetProperties(hwnd, size),
+			&pRenderTarget);
+
+		if (SUCCEEDED(hr))
+		{
+			const D2D1_COLOR_F color = D2D1::ColorF(1.0f, 1.0f, 0);
+			hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
+
+			if (SUCCEEDED(hr))
+			{
+				CalculateLayout();
+			}
+		}
+	}
+	return hr;
+}
+
+void DiscardGraphicsResources()
+{
+	SafeRelease(&pRenderTarget);
+	SafeRelease(&pBrush);
+}
+
+void OnPaint()
+{
+	HRESULT hr = CreateGraphicsResources();
+	if (SUCCEEDED(hr))
+	{
+		PAINTSTRUCT ps;
+		BeginPaint(hwnd, &ps);
+
+		pRenderTarget->BeginDraw();
+		pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
+		pRenderTarget->FillEllipse(ellipse, pBrush);
+
+		hr = pRenderTarget->EndDraw();
+		if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
+		{
+			DiscardGraphicsResources();
+		}
+		EndPaint(hwnd, &ps);
+	}
+}
+
+void Resize()
+{
+	if (pRenderTarget != NULL)
+	{
+		RECT rc;
+		GetClientRect(hwnd, &rc);
+		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
+		pRenderTarget->Resize(size);
+		CalculateLayout();
+		InvalidateRect(hwnd, NULL, FALSE);
+	}
 }
