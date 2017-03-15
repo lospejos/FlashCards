@@ -31,7 +31,7 @@ inline StateInfo* GetApplicationState(HWND hwnd)
 	return pStateInfo;
 }
 
-// SafeRelease for pointers
+// SafeRelease to call Release on D2D1 resource pointers
 template <class T> void SafeRelease(T **ppT)
 {
 	if (*ppT)
@@ -43,9 +43,9 @@ template <class T> void SafeRelease(T **ppT)
 
 /// Global variables
 HWND hwnd;
-ID2D1Factory *pFactory = NULL;
-ID2D1HwndRenderTarget *pRenderTarget = NULL;
-ID2D1SolidColorBrush *pBrush = NULL;
+ID2D1Factory *pFactory = NULL;		// Used to create other objects (render targets, stroke styles, geometries)
+ID2D1HwndRenderTarget *pRenderTarget = NULL;	/// COM object that typically targets the client area of the window; Creates brushes, bitmaps and meshes
+ID2D1SolidColorBrush *pBrush = NULL;	/// COM object that controls how lines and regions are painted (solid-color brushes / gradiant brushes)
 D2D1_ELLIPSE ellipse;
 
 // hInstance: handle for the .exe, hPrevInstance: no meaning, pCmdLine: unicode command line arguments, nCmdShow: flag for minimalizes, maximalized or normal
@@ -117,8 +117,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		pStateInfo = reinterpret_cast<StateInfo*>(pCreate->lpCreateParams);
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pStateInfo);	/// Store the StateInfo pointer in the instance data for the window
 
+		/// Create the Direct2D factory object, must be done before first WM_PAINT message
 		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pFactory)))
-			return -1;
+			return -1;	/// Fail CreateWindowEx
 		return 0;
 	}
 	else
@@ -182,15 +183,16 @@ HRESULT CreateGraphicsResources()
 		GetClientRect(hwnd, &rc);
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
+		/// Creates the render target for a window; Implicitly created the device for drawing the pixels, too; Returns S_OK if the target already exists
 		hr = pFactory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(),
-			D2D1::HwndRenderTargetProperties(hwnd, size),
+			D2D1::RenderTargetProperties(),					// Default options for the type of render target
+			D2D1::HwndRenderTargetProperties(hwnd, size),	// Window handle
 			&pRenderTarget);
 
 		if (SUCCEEDED(hr))
 		{
 			const D2D1_COLOR_F color = D2D1::ColorF(1.0f, 1.0f, 0);
-			hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
+			hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);		// Create a solid-color brush
 
 			if (SUCCEEDED(hr))
 			{
