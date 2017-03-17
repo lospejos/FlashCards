@@ -166,7 +166,7 @@ void CalculateLayout ()
 {
 	if (pRenderTarget != NULL)
 	{
-		D2D1_SIZE_F size = pRenderTarget->GetSize();
+		D2D1_SIZE_F size = pRenderTarget->GetSize();					/// Get the render target size in DIPs (not pixels)
 		const float x = size.width / 2;
 		const float y = size.height / 2;
 		const float radius = min(x, y);
@@ -209,36 +209,36 @@ void DiscardGraphicsResources()
 	SafeRelease(&pBrush);
 }
 
+/// Maybe need to convert DIP (Device-Indipendent Pixels) to DPI (Dots per inch)
 void OnPaint()
 {
-	HRESULT hr = CreateGraphicsResources();
+	HRESULT hr = CreateGraphicsResources();		/// Check if a valid render target exists. If not, create the render target and the device-dependent resources
 	if (SUCCEEDED(hr))
 	{
 		PAINTSTRUCT ps;
 		BeginPaint(hwnd, &ps);
-
-		pRenderTarget->BeginDraw();
-		pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
-		pRenderTarget->FillEllipse(ellipse, pBrush);
-
-		hr = pRenderTarget->EndDraw();
+		pRenderTarget->BeginDraw();											/// Start the drawing
+		pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));			/// Fill entire render target with a solid color
+		pRenderTarget->FillEllipse(ellipse, pBrush);						/// Draw the ellipse
+		hr = pRenderTarget->EndDraw();										/// End draw
 		if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
 		{
-			DiscardGraphicsResources();
+			DiscardGraphicsResources();		/// Discard the render target and device-dependent resources
 		}
 		EndPaint(hwnd, &ps);
 	}
 }
 
+/// Resize the render target to match the new window size, update the layout and repaint
 void Resize()
 {
 	if (pRenderTarget != NULL)
 	{
 		RECT rc;
-		GetClientRect(hwnd, &rc);
+		GetClientRect(hwnd, &rc);								/// Gets the window size in physical pixels
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-		pRenderTarget->Resize(size);
+		pRenderTarget->Resize(size);							/// Update the size
 		CalculateLayout();
-		InvalidateRect(hwnd, NULL, FALSE);
+		InvalidateRect(hwnd, NULL, FALSE);						/// Forces a repaint by adding the entire window to the update region
 	}
 }
