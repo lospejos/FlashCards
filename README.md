@@ -38,4 +38,4 @@ C++ Windows desktop application for digital flash cards
 - Change between front and back with a left mouse button double click
 - Switch on/off handwritten annotations with a singe right mouse button click (show indicator)
 - Show different tools in annotation mode (undo/redo, eraser, colors, ...)
-- On the back side the score can be increased if the answer was correct
+- On the back side the score can be increased if the answer was correct (by clicking once on a tick icon inside the score circle, gives immediate feedback)
