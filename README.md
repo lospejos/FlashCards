@@ -29,7 +29,13 @@ C++ Windows desktop application for digital flash cards
 
 #### Card set browser
 - Browse through all card sets, scoll down with mouse wheel
-- Select a set with one left mouse click
+- Select a set with one left mouse button click, open a set with a left mouse button double click
 - Select multiple sets with a left mouse click drag (selection rect)
 - Right mouse click with pop-up menu (add new card, edit this card set, delete this card set, study this card set)
 - Drag and drop of selected card sets to change the display order
+
+#### Flash Card viewer
+- Change between front and back with a left mouse button double click
+- Switch on/off handwritten annotations with a singe right mouse button click (show indicator)
+- Show different tools in annotation mode (undo/redo, eraser, colors, ...)
+- On the back side the score can be increased if the answer was correct
