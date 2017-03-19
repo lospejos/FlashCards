@@ -12,7 +12,7 @@ C++ Windows desktop application for digital flash cards
 - Folder structure with flash cards and card sets, scrollable
 - Direct manipulation
 - Right click pop-up menu to manipulate flash cards and card sets
-- Selection of multiple items with a selection rect when holding the left mouse button
+- Selection of multiple items with a selection rect when holding the left mouse button (or Ctr + A)
 
 #### Flash card:
 - Front and back with text, handwritten annotations and files (screenshots, images, pdfs, audio)
@@ -22,7 +22,14 @@ C++ Windows desktop application for digital flash cards
 
 #### Card set:
 - Contains n flash cards, new cards can be added, containing cards can be deleted
-- Colored and has a title
+- Colored, has a title and a display order (e.g. priority)
 - Scores on cards can be cleared/reset to 0%
 - Can be created, edited, deleted and moved
 - Shown as a stack of the containing flash cards (the more cards, the higher the stack)
+
+#### Card set browser
+- Browse through all card sets, scoll down with mouse wheel
+- Select a set with one left mouse click
+- Select multiple sets with a left mouse click drag (selection rect)
+- Right mouse click with pop-up menu (add new card, edit this card set, delete this card set, study this card set)
+- Drag and drop of selected card sets to change the display order
