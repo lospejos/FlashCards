@@ -15,7 +15,7 @@ C++ Windows desktop application for digital flash cards
 - Selection of multiple items with a selection rect when holding the left mouse button (or Ctr + A)
 
 #### Flash card:
-- Front and back with text, handwritten annotations and files (screenshots, images, pdfs, audio)
+- Front and back with text, handwritten annotations and images/screenshots
 - Has a score from 0% to 100% that shows the learning curve (e.g. when the card was min. answered 3 times correctly -> 100%)
 - Can be created, edited, deleted and moved (copied/cut) into another card set
 - Shown as a single flash card with its front side and the score
