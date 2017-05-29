@@ -66,6 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         logfilePathLength--;
     memcpy(logfilePath + logfilePathLength, L"log.txt\0", 8 * sizeof(wchar_t));
     Logfile f (logfilePath);
+    delete logfilePath;
     f.Write("TIME: Created logfile\n");
 
 	/// Register the window class.
