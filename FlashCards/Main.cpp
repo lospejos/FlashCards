@@ -8,6 +8,8 @@
 #pragma comment (lib, "d2d1")
 #include <windows.h>
 #include <d2d1.h>
+#include "Logfile.h"
+#include <time.h>
 
 /// Function declarations
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -51,6 +53,21 @@ D2D1_ELLIPSE ellipse;
 // hInstance: handle for the .exe, hPrevInstance: no meaning, pCmdLine: unicode command line arguments, nCmdShow: flag for minimalizes, maximalized or normal
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+    // Get command line arguments
+    LPWSTR* argv;
+    int argc;
+    argv = CommandLineToArgvW(pCmdLine, &argc);
+
+    // Create the log file in the application directory
+    wchar_t* logfilePath = new wchar_t[MAX_PATH];
+    memcpy(logfilePath, *argv, (wcslen(*argv) + 1) * sizeof(wchar_t));
+    int logfilePathLength = wcslen(logfilePath);
+    while (logfilePath[logfilePathLength - 1] != L'\\')
+        logfilePathLength--;
+    memcpy(logfilePath + logfilePathLength, L"log.txt\0", 8 * sizeof(wchar_t));
+    Logfile f (logfilePath);
+    f.Write("TIME: Created logfile\n");
+
 	/// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
