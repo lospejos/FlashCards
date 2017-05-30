@@ -49,6 +49,7 @@ ID2D1Factory *pFactory = NULL;		// Used to create other objects (render targets,
 ID2D1HwndRenderTarget *pRenderTarget = NULL;	/// COM object that typically targets the client area of the window; Creates brushes, bitmaps and meshes
 ID2D1SolidColorBrush *pBrush = NULL;	/// COM object that controls how lines and regions are painted (solid-color brushes / gradiant brushes)
 D2D1_ELLIPSE ellipse;
+std::ofstream logfile;
 
 // hInstance: handle for the .exe, hPrevInstance: no meaning, pCmdLine: unicode command line arguments, nCmdShow: flag for minimalizes, maximalized or normal
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -65,9 +66,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     while (logfilePath[logfilePathLength - 1] != L'\\')
         logfilePathLength--;
     memcpy(logfilePath + logfilePathLength, L"log.txt\0", 8 * sizeof(wchar_t));
-    Logfile f (logfilePath);
-    delete logfilePath;
-    f.Write("TIME: Created logfile\n");
+    logfile.open(logfilePath, std::ios::out | std::ios_base::trunc);
+    logfile << "Erste Zeile\n";
+    logfile << "Zweite Zeile\n";
 
 	/// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";
@@ -156,6 +157,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_DESTROY:
 		{
+            // Write data to logfile, close logfile
+            logfile.flush();
+            logfile.close();
 			DiscardGraphicsResources();
 			SafeRelease(&pFactory);
 			PostQuitMessage(0);		/// Post a WM_QUIT message on the message queue, GetMessage returns 0 and the program ends
